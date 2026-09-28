@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "813215964970",
+    "project_id": "hijama-app-6a73b",
+    "storage_bucket": "hijama-app-6a73b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813215964970:android:50c8802447d8c3426d4853",
+        "android_client_info": {
+          "package_name": "com.example.hijama"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8kk3bvHXpMM-ey2ZR7Pr93pA1OJ95aGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
