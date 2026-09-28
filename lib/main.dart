@@ -11,6 +11,7 @@ import 'cancellation_requests_screen.dart';
 import 'pending_appointments_screen.dart';
 import 'notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -48,7 +49,20 @@ Future<void> scheduleApprovedAppointmentReminders() async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyB8a_TqftWzKvWSxk_SiQFYh0E_sc9e8yY',
+        authDomain: 'hijama-app-6a73b.firebaseapp.com',
+        projectId: 'hijama-app-6a73b',
+        storageBucket: 'hijama-app-6a73b.firebasestorage.app',
+        messagingSenderId: '813215964970',
+        appId: '1:813215964970:web:689e8c03f344546c6d4853',
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
   await NotificationService.initialize();
 
   await FirebaseMessaging.instance.requestPermission(
@@ -2881,28 +2895,29 @@ class MyAppointmentsScreen extends StatefulWidget {
 class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
   Set<String> _hiddenAppointmentIds = {};
 
-Future<void> _loadHiddenAppointments() async {
-  final user = FirebaseAuth.instance.currentUser;
+  Future<void> _loadHiddenAppointments() async {
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user == null) return;
+    if (user == null) return;
 
-  final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
 
-  final hiddenIds =
-      prefs.getStringList('hidden_appointments_${user.uid}') ?? [];
+    final hiddenIds =
+        prefs.getStringList('hidden_appointments_${user.uid}') ?? [];
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  setState(() {
-    _hiddenAppointmentIds = hiddenIds.toSet();
-  });
-}
+    setState(() {
+      _hiddenAppointmentIds = hiddenIds.toSet();
+    });
+  }
 
-@override
-void initState() {
-  super.initState();
-  _loadHiddenAppointments();
-}
+  @override
+  void initState() {
+    super.initState();
+    _loadHiddenAppointments();
+  }
+
   String getStatusText(String status) {
     switch (status) {
       case 'approved':
@@ -3001,82 +3016,86 @@ void initState() {
       child: Scaffold(
         backgroundColor: const Color(0xFFF8F8F8),
         appBar: AppBar(
-  title: const Text(
-    'مواعيدي',
-    style: TextStyle(fontWeight: FontWeight.bold),
-  ),
-  centerTitle: true,
-  backgroundColor: Colors.white,
-  foregroundColor: const Color(0xFFB71C1C),
-  actions: [
-    IconButton(
-      tooltip: 'إخفاء المواعيد القديمة',
-      icon: const Icon(Icons.delete_sweep_outlined),
-      onPressed: () async {
-        final user = FirebaseAuth.instance.currentUser;
-
-        if (user == null) return;
-
-        final snapshot = await FirebaseFirestore.instance
-            .collection('appointments')
-            .where('userId', isEqualTo: user.uid)
-            .get();
-
-        final now = DateTime.now();
-
-        final oldAppointmentIds = snapshot.docs.where((doc) {
-          final data = doc.data();
-          final timestamp = data['date'] as Timestamp?;
-
-          if (timestamp == null) return false;
-
-          return timestamp.toDate().isBefore(now);
-        }).map((doc) => doc.id).toList();
-
-        if (oldAppointmentIds.isEmpty) {
-          if (!context.mounted) return;
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('لا توجد مواعيد قديمة لإخفائها'),
-            ),
-          );
-
-          return;
-        }
-
-        final prefs = await SharedPreferences.getInstance();
-
-        final hiddenIds =
-            prefs.getStringList('hidden_appointments_${user.uid}') ?? [];
-
-        final updatedIds = {
-          ...hiddenIds,
-          ...oldAppointmentIds,
-        }.toList();
-
-        await prefs.setStringList(
-          'hidden_appointments_${user.uid}',
-          updatedIds,
-        );
-
-        if (!context.mounted) return;
-
-        setState(() {
-          _hiddenAppointmentIds.addAll(oldAppointmentIds);
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'تم إخفاء ${oldAppointmentIds.length} موعد قديم من جهازك',
-            ),
+          title: const Text(
+            'مواعيدي',
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-        );
-      },
-    ),
-  ],
-),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFFB71C1C),
+          actions: [
+            IconButton(
+              tooltip: 'إخفاء المواعيد القديمة',
+              icon: const Icon(Icons.delete_sweep_outlined),
+              onPressed: () async {
+                final user = FirebaseAuth.instance.currentUser;
+
+                if (user == null) return;
+
+                final snapshot = await FirebaseFirestore.instance
+                    .collection('appointments')
+                    .where('userId', isEqualTo: user.uid)
+                    .get();
+
+                final now = DateTime.now();
+
+                final oldAppointmentIds = snapshot.docs
+                    .where((doc) {
+                      final data = doc.data();
+                      final timestamp = data['date'] as Timestamp?;
+
+                      if (timestamp == null) return false;
+
+                      return timestamp.toDate().isBefore(now);
+                    })
+                    .map((doc) => doc.id)
+                    .toList();
+
+                if (oldAppointmentIds.isEmpty) {
+                  if (!context.mounted) return;
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('لا توجد مواعيد قديمة لإخفائها'),
+                    ),
+                  );
+
+                  return;
+                }
+
+                final prefs = await SharedPreferences.getInstance();
+
+                final hiddenIds =
+                    prefs.getStringList('hidden_appointments_${user.uid}') ??
+                        [];
+
+                final updatedIds = {
+                  ...hiddenIds,
+                  ...oldAppointmentIds,
+                }.toList();
+
+                await prefs.setStringList(
+                  'hidden_appointments_${user.uid}',
+                  updatedIds,
+                );
+
+                if (!context.mounted) return;
+
+                setState(() {
+                  _hiddenAppointmentIds.addAll(oldAppointmentIds);
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'تم إخفاء ${oldAppointmentIds.length} موعد قديم من جهازك',
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
         body: user == null
             ? const Center(
                 child: Text('يجب تسجيل الدخول أولًا'),
@@ -3108,11 +3127,11 @@ void initState() {
                     );
                   }
 
-                 final allAppointments = snapshot.data?.docs ?? [];
+                  final allAppointments = snapshot.data?.docs ?? [];
 
-final appointments = allAppointments.where((doc) {
-  return !_hiddenAppointmentIds.contains(doc.id);
-}).toList();
+                  final appointments = allAppointments.where((doc) {
+                    return !_hiddenAppointmentIds.contains(doc.id);
+                  }).toList();
 
                   if (appointments.isEmpty) {
                     return Center(
