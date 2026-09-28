@@ -81,12 +81,17 @@
       color: #666;
     }
 
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .download {
       display: block;
       width: 100%;
       padding: 17px 20px;
       border-radius: 16px;
-      background: linear-gradient(135deg, #b71c1c, #8e1010);
       color: white;
       text-decoration: none;
       font-size: 18px;
@@ -95,9 +100,17 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
+    .android {
+      background: linear-gradient(135deg, #b71c1c, #8e1010);
+    }
+
+    .iphone {
+      background: linear-gradient(135deg, #333, #111);
+    }
+
     .download:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(183, 28, 28, 0.30);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.20);
     }
 
     .download:active {
@@ -189,7 +202,7 @@
       <div class="logo-container">
         <img
           class="logo"
-         src="https://raw.githubusercontent.com/Mohammed-ML21/hijama-app/main/app_icon.png"
+          src="https://raw.githubusercontent.com/Mohammed-ML21/hijama-app/main/app_icon.png"
           alt="شعار تطبيق حجامة"
         >
       </div>
@@ -205,16 +218,27 @@
         وتابع مواعيدك وطلبات الحجز من خلال تطبيق واحد.
       </p>
 
-      <a
-        class="download"
-        href="https://github.com/Mohammed-ML21/hijama-app/releases/download/v1.0.0/app-release.apk"
-      >
-        📱 تحميل التطبيق للأندرويد
-      </a>
+      <div class="buttons">
+
+        <a
+          class="download android"
+          href="https://github.com/Mohammed-ML21/hijama-app/releases/download/v1.0.0/app-release.apk"
+        >
+          🤖 تحميل التطبيق للأندرويد
+        </a>
+
+        <a
+          class="download iphone"
+          href="https://mohammed-ml21.github.io/hijama-app/app/"
+        >
+          🍎 فتح التطبيق للآيفون
+        </a>
+
+      </div>
 
       <div class="info">
         <div class="badge">الإصدار 1.0.0</div>
-        <div class="badge">Android</div>
+        <div class="badge">Android + iPhone</div>
         <div class="badge">مجاني</div>
       </div>
 
