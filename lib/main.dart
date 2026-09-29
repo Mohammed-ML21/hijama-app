@@ -64,58 +64,57 @@ Future<void> main() async {
     await Firebase.initializeApp();
   }
   if (!kIsWeb) {
-  await NotificationService.initialize();
+    await NotificationService.initialize();
 
-  await FirebaseMessaging.instance.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-}
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
   if (!kIsWeb) {
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    final notification = message.notification;
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final notification = message.notification;
 
-    if (notification != null) {
-      scaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 5),
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          content: Row(
-            children: [
-              const Icon(
-                Icons.notifications_active,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      notification.title ?? 'إشعار جديد',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    if (notification.body != null)
-                      Text(notification.body!),
-                  ],
+      if (notification != null) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.notifications_active,
+                  color: Colors.white,
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        notification.title ?? 'إشعار جديد',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      if (notification.body != null) Text(notification.body!),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    }
-  });
-}
+        );
+      }
+    });
+  }
   runApp(const HijamaApp());
 }
 
@@ -220,7 +219,9 @@ class _AuthGateState extends State<AuthGate> {
               }
 
               saveFcmToken(user);
-              scheduleApprovedAppointmentReminders();
+              if (!kIsWeb) {
+                scheduleApprovedAppointmentReminders();
+              }
               return const HomeScreen();
             },
           );
