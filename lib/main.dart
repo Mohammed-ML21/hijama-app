@@ -63,6 +63,7 @@ Future<void> main() async {
   } else {
     await Firebase.initializeApp();
   }
+  if (!kIsWeb) {
   await NotificationService.initialize();
 
   await FirebaseMessaging.instance.requestPermission(
@@ -70,6 +71,8 @@ Future<void> main() async {
     badge: true,
     sound: true,
   );
+}
+  if (!kIsWeb) {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     final notification = message.notification;
 
@@ -101,7 +104,8 @@ Future<void> main() async {
                         fontSize: 16,
                       ),
                     ),
-                    if (notification.body != null) Text(notification.body!),
+                    if (notification.body != null)
+                      Text(notification.body!),
                   ],
                 ),
               ),
@@ -111,7 +115,7 @@ Future<void> main() async {
       );
     }
   });
-
+}
   runApp(const HijamaApp());
 }
 
